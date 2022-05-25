@@ -1,0 +1,1 @@
+from .thai_spelling import *
