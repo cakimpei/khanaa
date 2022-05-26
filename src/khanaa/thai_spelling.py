@@ -9,6 +9,7 @@ _DEFAULT_PREF = {
     'clear_vowel_onset': 'not_true_cluster',
     'clear_vowel_tone_mark': False,
     'obvious_low_singles': True,
+    'obvious_h_low_single': True,
     'onset_style': 'plain',
     'silent_before_style': 'kaaran',
     'coda_style': 'plain',
@@ -45,6 +46,10 @@ class SpellWord:
         :key bool obvious_low_singles: Turn on/off option to make
             single low-single low onset cluster less ambiguous.
             Option: False/off (ex. หนวี่), True/on (ex. นหวี่).
+            Default: True
+        :key bool obvious_h_low_single: Turn on/off option to make
+            ฮ-single low onset cluster less ambiguous.
+            Option: False/off (ex. หว่า), True/on (ex. ฮหว่า).
             Default: True
         :key str onset_style: Select onset style.
             Option: 'plain' (no diacritic), 'phinthu' (ใส่พินทุ),
@@ -126,23 +131,24 @@ class SpellWord:
         self.silent_after = silent_after
         self.tone = tone
 
-        SpellWord._find_data(self)
-        SpellWord._delete_taikhuu(self)
-        combined = SpellWord._combine(self)
+        self._find_data()
+        self._delete_taikhuu()
+        combined = self._combine()
         combined = combined.replace('+', self.tone_mark)
-        combined_coda = SpellWord._combine_coda(self)
+        combined_coda = self._combine_coda()
 
         result = ''.join([combined, combined_coda])
         return result
 
     def _find_data(self) -> None:
         """Check and collect data for the word"""
-        SpellWord._check_vowel_coda(self)
-        SpellWord._check_multiple_coda(self)
-        SpellWord._select_onset(self)
-        SpellWord._check_low_singles(self)
-        SpellWord._find_vowel(self)
-        SpellWord._find_tone(self)
+        self._check_vowel_coda()
+        self._check_multiple_coda()
+        self._select_onset()
+        self._check_low_singles()
+        self._check_h_low_single()
+        self._find_vowel()
+        self._find_tone()
 
     def _check_vowel_coda(self) -> None:
         """If the vowel already coda, change coda to silent after.
@@ -150,7 +156,7 @@ class SpellWord:
         Ex. อัย เอา already have j, w coda. They can't have coda.
         """
         if VOWELS[self.vowel['used']]['sound_coda']:
-            SpellWord._coda_to_silent(self)
+            self._coda_to_silent()
 
     def _coda_to_silent(self) -> None:
         """Change coda to silent after."""
@@ -206,7 +212,8 @@ class SpellWord:
         If true, we'll use the latter consonant as the main consonant
         to determine tone.
         Ex. นวี นหวี่ นวี่ นวี้ นหวี
-        instead of นวี หนวี่ นวี่ นวี้ หนวี"""
+        instead of นวี หนวี่ นวี่ นวี้ หนวี
+        """
         if (self.option['obvious_low_singles'] == True
                 and len(self.onset['input']) > 1
                 and CONSONANTS[self.onset['input'][-1]]['class'] == 'low_single'
@@ -220,10 +227,31 @@ class SpellWord:
         else:
             self.low_single_is_ambiguous = False
 
+    def _check_h_low_single(self) -> None:
+        """Check for ฮ and single low onset cluster ambiguity.
+        
+        If true, we'll use the latter consonant as the main consonant
+        to determine tone. (ฮ is paired low and will have the same tone marker
+        with single low vowel).
+        Ex. ฮวา ฮหว่า ฮว่า ฮว้า ฮหวา
+        instead of ฮวา หว่า ฮว่า ฮว้า หวา
+        """
+        if (self.option['obvious_h_low_single'] == True
+                and len(self.onset['input']) > 1
+                and self.onset['input'][-2] == 'ฮ'
+                and CONSONANTS[self.onset['input'][-1]]['class'] == 'low_single'):
+            self.onset.update({
+                'used_index': -1,
+                'used': self.onset['input'][-1],
+            })
+            self.h_is_ambiguous = True
+        else:
+            self.h_is_ambiguous = False
+
     def _find_vowel(self) -> None:
         """Find vowel to use from VOWELS"""
         vowel_used = self.vowel['used']
-        vowel_used = SpellWord._select_vowel_length(self, vowel_used)
+        vowel_used = self._select_vowel_length(vowel_used)
         if not self.coda:
             vowel_form = VOWELS[vowel_used]['form_no_coda']
         else:
@@ -237,7 +265,7 @@ class SpellWord:
             'form': vowel_form
         })
         if not self.vowel['form']:
-            SpellWord._deal_empty_vowel(self)
+            self._deal_empty_vowel()
 
     def _select_vowel_length(self, vowel_used: str) -> str:
         """Select vowel length according to the preference."""
@@ -266,7 +294,7 @@ class SpellWord:
         else:
             vowel_used = self.vowel['used']
             vowel_form = VOWELS[vowel_used]['form_no_coda']
-            SpellWord._coda_to_silent(self)
+            self._coda_to_silent()
         self.vowel.update({
             'used': vowel_used,
             'form': vowel_form
@@ -281,15 +309,15 @@ class SpellWord:
         if self.tone not in range(5):
             return
         
-        tone_info = SpellWord._find_tone_info(self)
+        tone_info = self._find_tone_info()
 
         if tone_info[0] == 'pair':
             if CONSONANTS[self.onset['used']]['class'] == 'high':
-                SpellWord._use_pair_onset(self)
+                self._use_pair_onset()
             elif CONSONANTS[self.onset['used']]['class'] == 'low_pair':
-                SpellWord._use_pair_onset(self)
+                self._use_pair_onset()
             if CONSONANTS[self.onset['used']]['class'] == 'low_single':
-                SpellWord._use_h_onset(self)
+                self._use_h_onset()
 
         if tone_info[1]:
             self.tone_mark = TONE_MARKERS[tone_info[1]]
@@ -299,7 +327,7 @@ class SpellWord:
         onset_class = CONSONANTS[self.onset['used']]['class']
         if onset_class in ['low_pair', 'low_single']:
             onset_class = 'low'
-        alive_dead = 'dead' if SpellWord._is_checked(self) else 'alive'
+        alive_dead = 'dead' if self._is_checked() else 'alive'
         length = VOWELS[self.vowel['used']]['length']
 
         if onset_class in ['high', 'low'] and alive_dead == 'dead':
@@ -360,19 +388,23 @@ class SpellWord:
         Ex. เชว, แชว, โชว > ชเว, ชแว, ชโว
 
         If the word is already mark for being ambiguous single low-
-        single low cluster, just put the vowel in front of the
+        single low cluster and has ห นำ, just put the vowel in front of the
         last consonant.
+
+        Same case with ambiguous ฮ and single low cluster.
 
         Otherwise use general case: Every onset is after the vowel."""
         if len(self.onset['input']) > 2:
             index_after_vowel = -2
-        elif SpellWord._is_vowel_ambiguous(self):
+        elif self._is_vowel_ambiguous():
             index_after_vowel = -1
-        elif self.low_single_is_ambiguous:
+        elif self.low_single_is_ambiguous and len(self.onset['form']) == 2:
+            index_after_vowel = -1
+        elif self.h_is_ambiguous and len(self.onset['form']) == 2:
             index_after_vowel = -1
         else:
             index_after_vowel = 0
-        combined = SpellWord._join_onset_vowel(self, index_after_vowel)
+        combined = self._join_onset_vowel(index_after_vowel)
         
         return combined
     
@@ -400,17 +432,16 @@ class SpellWord:
 
     def _join_onset_vowel(self, index_after_vowel: int) -> str:
         """Join onsets and vowel according to the index provided."""
-        combined_onset = SpellWord._join_onset(self)
-        index_after_vowel = SpellWord._find_new_index(self, index_after_vowel)
+        combined_onset = self._join_onset()
+        index_after_vowel = self._find_new_index(index_after_vowel)
 
-        before_vowel = SpellWord._combine_diacritic(
-            self,
+        before_vowel = self._combine_diacritic(
             combined_onset[:index_after_vowel]
         )
         after_vowel = combined_onset[index_after_vowel:]
         if len(after_vowel) > 1:
             after_vowel = ''.join([
-                SpellWord._combine_diacritic(self, after_vowel[:-1]),
+                self._combine_diacritic(after_vowel[:-1]),
                 after_vowel[-1]
             ])
         
@@ -450,7 +481,7 @@ class SpellWord:
             return content
         if self.option['onset_style'] in ['phinthu', 'yaamakkaan', 'kaaran']:
             diacritic = DIACRITICS[f"{self.option['onset_style']}"]
-            return SpellWord._add_diacritic(content, diacritic)
+            return self._add_diacritic(content, diacritic)
 
     @staticmethod
     def _add_diacritic(chars: str, diacritic: str) -> str:
@@ -468,12 +499,12 @@ class SpellWord:
 
     def _combine_coda(self) -> str:
         """Combine coda section: silent before, coda, silent after."""
-        self.silent_before = SpellWord._combine_diacritic_coda(
-            self, self.silent_before, 'silent_before')
-        self.coda = SpellWord._combine_diacritic_coda(
-            self, self.coda, 'coda')
-        self.silent_after = SpellWord._combine_diacritic_coda(
-            self, self.silent_after, 'silent_after')
+        self.silent_before = self._combine_diacritic_coda(
+            self.silent_before, 'silent_before')
+        self.coda = self._combine_diacritic_coda(
+            self.coda, 'coda')
+        self.silent_after = self._combine_diacritic_coda(
+            self.silent_after, 'silent_after')
         combined_coda = ''.join([
             self.silent_before,
             self.coda,
@@ -492,9 +523,9 @@ class SpellWord:
                 'phinthu', 'yaamakkaan', 'kaaran']:
             diacritic = DIACRITICS[f'{self.option[style]}']
             if self.option[style] in ['phinthu', 'yaamakkaan']:
-                add_method = SpellWord._add_diacritic
+                add_method = self._add_diacritic
             elif self.option[style] in ['kaaran']:
-                add_method = SpellWord._add_diacritic_last
+                add_method = self._add_diacritic_last
             return add_method(content, diacritic)
 
     def all_tone(self, **word: Any) -> List[str]:
@@ -504,7 +535,7 @@ class SpellWord:
         result = []
         for tone_num in range(0, 5):
             word['tone'] = tone_num
-            result.append(SpellWord.spell_out(self, **word))
+            result.append(self.spell_out(**word))
         return result
 
 def find_vowel_pair(vowel: str) -> str:

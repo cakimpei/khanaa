@@ -145,6 +145,15 @@ SETTING_LS = [
     ['ลวี', 'ลหวี่', 'ลวี่', 'ลวี้', 'ลหวี'])
 ]
 
+SETTING_HLS = [
+    ({'obvious_h_low_single': False},
+    {'onset': 'ฮว', 'vowel': 'เอีย', 'coda': 'น'},
+    ['ฮเวียน', 'เหวี่ยน', 'เฮวี่ยน', 'เฮวี้ยน', 'หเวียน']),
+    ({'obvious_h_low_single': True},
+    {'onset': 'ฮว', 'vowel': 'เอีย', 'coda': 'น'},
+    ['ฮเวียน', 'ฮเหวี่ยน', 'เฮวี่ยน', 'เฮวี้ยน', 'ฮเหวียน'])
+]
+
 class TestSpellWord(unittest.TestCase):
 
     def test_general(self):
@@ -179,6 +188,11 @@ class TestSpellWord(unittest.TestCase):
 
     def test_setting_ls(self):
         for case in SETTING_LS:
+            spell = SpellWord(**case[0])
+            self.assertEqual(spell.all_tone(**case[1]), case[2])
+
+    def test_setting_ls(self):
+        for case in SETTING_HLS:
             spell = SpellWord(**case[0])
             self.assertEqual(spell.all_tone(**case[1]), case[2])
 
