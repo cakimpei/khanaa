@@ -1,6 +1,7 @@
 """Thai spelling"""
 
 from typing import Any, List, Dict
+
 from .thai_script import (CLUSTERS, CONSONANTS, VOWELS, TONES,
     TONE_MARKERS, DIACRITICS)
 
@@ -11,6 +12,7 @@ _DEFAULT_PREF = {
     'obvious_low_singles': True,
     'obvious_h_low_single': True,
     'onset_style': 'plain',
+    'onset_style_apply': 'not_h',
     'silent_before_style': 'kaaran',
     'coda_style': 'plain',
     'silent_after_style': 'kaaran',
@@ -55,6 +57,11 @@ class SpellWord:
             Option: 'plain' (no diacritic), 'phinthu' (ใส่พินทุ),
             'yaamakkaan' (ใส่ยามักการ), 'kaaran' (ใส่การันต์)
             Default: 'plain'
+        :key str onset_style_apply: Select character that onset style
+            will be applied.
+            Option: 'not_h' (ห นำ won't have diacritic), 'h' (ห นำ
+            will have diacritic)
+            Default: 'not_h'
         :key str silent_before_style: Select style of the silent
             consonant that comes before the coda.
             Option: 'plain', 'phinthu', 'yaamakkaan', 'kaaran', 'hide'
@@ -440,9 +447,14 @@ class SpellWord:
         )
         after_vowel = combined_onset[index_after_vowel:]
         if len(after_vowel) > 1:
+            if (len(self.onset['form']) == 2
+                and self.option['onset_style_apply'] == 'not_h'):
+                diacritic_index = -2
+            else:
+                diacritic_index = -1
             after_vowel = ''.join([
-                self._combine_diacritic(after_vowel[:-1]),
-                after_vowel[-1]
+                self._combine_diacritic(after_vowel[:diacritic_index]),
+                after_vowel[diacritic_index:]
             ])
         
         combined = ''.join([
@@ -482,6 +494,7 @@ class SpellWord:
         if self.option['onset_style'] in ['phinthu', 'yaamakkaan', 'kaaran']:
             diacritic = DIACRITICS[f"{self.option['onset_style']}"]
             return self._add_diacritic(content, diacritic)
+        raise ValueError('onset_style not recognized')
 
     @staticmethod
     def _add_diacritic(chars: str, diacritic: str) -> str:
@@ -527,6 +540,8 @@ class SpellWord:
             elif self.option[style] in ['kaaran']:
                 add_method = self._add_diacritic_last
             return add_method(content, diacritic)
+        else:
+            raise ValueError(f'{style} not recognized')
 
     def all_tone(self, **word: Any) -> List[str]:
         """Return all five tone versions of the word.
