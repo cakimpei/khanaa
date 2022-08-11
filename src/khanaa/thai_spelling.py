@@ -28,73 +28,81 @@ class SpellWord:
 
         None of the keyword arguments here are required.
 
-        :key bool clear_vowel: Turn on/off option to put the first
-            consonant in front of vowel to make the pronunciation
-            less ambiguous.
-            Option: False/off (ex. เชว), True/on (ex. ชเว).
-            Default: True
-        :key str clear_vowel_onset: If clear_vowel is turned on,
-            select onset cluster type that clear_vowel will be
-            used with.
-            Option: 'not_true_cluster' (true cluster คำควบกล้ำแท้
-            won't be separated ex. เกวน ชเวน), 'all' (ex. กเวน ชเวน)
-            Default: 'not_true_cluster'
-        :key bool clear_vowel_tone_mark: If clear_vowel is turned on,
-            select if clean_vowel will be used with the word with
-            tone marker or not.
-            Option: False/not use (ex. คเว เคว่), True/use
-            (ex. คเว คเว่).
-            Default: False
-        :key bool obvious_low_singles: Turn on/off option to make
-            single low-single low onset cluster less ambiguous.
-            Option: False/off (ex. หนวี่), True/on (ex. นหวี่).
-            Default: True
-        :key bool obvious_h_low_single: Turn on/off option to make
-            ฮ-single low onset cluster less ambiguous.
-            Option: False/off (ex. หว่า), True/on (ex. ฮหว่า).
-            Default: True
-        :key str onset_style: Select onset style.
-            Option: 'plain' (no diacritic), 'phinthu' (ใส่พินทุ),
-            'yaamakkaan' (ใส่ยามักการ), 'kaaran' (ใส่การันต์)
-            Default: 'plain'
-        :key str onset_style_apply: Select character that onset style
-            will be applied.
-            Option: 'not_h' (ห นำ won't have diacritic), 'h' (ห นำ
-            will have diacritic)
-            Default: 'not_h'
-        :key str silent_before_style: Select style of the silent
-            consonant that comes before the coda.
-            Option: 'plain', 'phinthu', 'yaamakkaan', 'kaaran', 'hide'
-            Default: 'kaaran'
-        :key str coda_style: Select coda style.
-            Option: 'plain', 'phinthu', 'yaamakkaan', 'kaaran'
-            Default: 'plain'
-        :key str silent_after_style: Select style of the silent
-            consonant that comes after the coda.
-            Option: 'plain', 'phinthu', 'yaamakkaan', 'kaaran', 'hide'
-            Default: 'kaaran'
-        :key str vowel_no_coda: Select what we should do when vowels (เออะ,
-            เอียะ, เอือะ, อัวะ) without its own coda form have coda.
-            Option: 'pair' (use its pair form ex. เอียะ + น => เอียน),
-            'silent_after' (push the coda to silent_after ex. เอียะ + น
-            => เอียะน์)
-            Default: 'pair'
-        :key dict[str, str] vowel_coda_form: Select specific vowel form
-            to use when coda is present. Put vowel in dict key and
-            put vowel form in its value. In vowel form, - is
-            the consonant position and + is the tone marker position.
-            Example: vowel_coda_form={'เออ': 'เ-+อ'} (the result
-            will be, for example, เดอน instead of the default เดิน)
-        :key str vowel_length: Select vowel length.
-            Option: 'input' (same as input), 'short' (if long vowel
-            is in the input, the result will be with a short vowel),
-            'long' (vice versa)
-            Default: 'input'
-        :key dict[str, str] vowel_pair_form: Select specific vowel pair
-            form to use when the length is specified.
-            Example: vowel_length='short',
-            vowel_pair_form={'อาย': 'อัย'}
-            (อาย will be shorten to อัย instead of the default ไอ)
+        Find all available Thai consonants, vowels, and true clusters
+        from find_letter_list()
+
+        Keyword Args:
+            clear_vowel (bool): Turn on/off option to put the first
+                consonant in front of vowel to make the pronunciation
+                less ambiguous.
+                Option: False/off (ex. เชว), True/on (ex. ชเว).
+                Default: True
+            clear_vowel_onset (str): If clear_vowel is turned on,
+                select onset cluster type that clear_vowel will be
+                used with.
+                Option: 'not_true_cluster' (true cluster คำควบกล้ำแท้
+                won't be separated ex. เกวน ชเวน), 'all' (ex. กเวน ชเวน)
+                Default: 'not_true_cluster'
+            clear_vowel_tone_mark (bool): If clear_vowel is turned on,
+                select if clean_vowel will be used with the word with
+                tone marker or not.
+                Option: False/not use (ex. คเว เคว่), True/use
+                (ex. คเว คเว่).
+                Default: False
+            obvious_low_singles (bool): Turn on/off option to make
+                single low-single low onset cluster less ambiguous.
+                Option: False/off (ex. หนวี่), True/on (ex. นหวี่).
+                Default: True
+            obvious_h_low_single (bool): Turn on/off option to make
+                ฮ-single low onset cluster less ambiguous.
+                Option: False/off (ex. หว่า), True/on (ex. ฮหว่า).
+                Default: True
+            onset_style (str): Select onset style.
+                Option: 'plain' (no diacritic), 'phinthu' (ใส่พินทุ),
+                'yaamakkaan' (ใส่ยามักการ), 'kaaran' (ใส่การันต์)
+                Default: 'plain'
+            onset_style_apply (str): Select character that onset style
+                will be applied.
+                Option: 'not_h' (ห นำ won't have diacritic), 'h' (ห นำ
+                will have diacritic)
+                Default: 'not_h'
+            silent_before_style (str): Select style of the silent
+                consonant that comes before the coda.
+                Option: 'plain', 'phinthu', 'yaamakkaan', 'kaaran',
+                'hide'
+                Default: 'kaaran'
+            coda_style (str): Select coda style.
+                Option: 'plain', 'phinthu', 'yaamakkaan', 'kaaran'
+                Default: 'plain'
+            silent_after_style (str): Select style of the silent
+                consonant that comes after the coda.
+                Option: 'plain', 'phinthu', 'yaamakkaan', 'kaaran',
+                'hide'
+                Default: 'kaaran'
+            vowel_no_coda (str): Select what we should do when vowels
+                (เออะ, เอียะ, เอือะ, อัวะ) without its own coda form
+                have coda.
+                Option: 'pair' (use its pair form ex. เอียะ + น
+                => เอียน), 'silent_after' (push the coda to
+                silent_after ex. เอียะ + น => เอียะน์)
+                Default: 'pair'
+            vowel_coda_form (dict[str, str]): Select specific
+                vowel form to use when coda is present. Put vowel in
+                dict key and put vowel form in its value.
+                In vowel form, - is the consonant position and + is
+                the tone marker position.
+                Example: vowel_coda_form={'เออ': 'เ-+อ'} (the result
+                will be, for example, เดอน instead of the default เดิน)
+            vowel_length (str): Select vowel length.
+                Option: 'input' (same as input), 'short' (if long vowel
+                is in the input, the result will be with
+                a short vowel), 'long' (vice versa)
+                Default: 'input'
+            vowel_pair_form (dict[str, str]): Select specific
+                vowel pair form to use when the length is specified.
+                Example: vowel_length='short',
+                vowel_pair_form={'อาย': 'อัย'}
+                (อาย will be shorten to อัย instead of the default ไอ)
         """
         self.option = {**_DEFAULT_PREF, **pref}
 
@@ -108,28 +116,36 @@ class SpellWord:
             tone: int = -1) -> str:
         """Return the word from the information provided.
 
-        Example:
+        Examples:
 
-        spell = SpellWord()
+            spell = Kham(onset='ข', vowel='เอีย', coda='น')
 
-        result = spell.spell_out(onset='ข', vowel='เอีย', coda='น')
-        
-        result should be 'เขียน'
+            result = spell.form
 
-        Find all available Thai consonants, vowels, and true clusters
-        from find_letter_list()
-        
-        :param onset: Onset (can be one or more) พยัญชนะต้น
-        :param vowel: A vowel.
-            Write the vowel with อ as a placeholder.
-            If vowel has ย, ว or j, w coda, please put
-            them here. (Don't put ย, ว in coda section).
-            Ex. อา, ไอ, อาว, อํ
-        :param silent_before: Silent consonant(s) before coda
-        :param coda: A coda, not including j, w ตัวสะกด
-        :param silent_after: Silent consonant(s) after coda
-        :param tone: Tone number -1 not specified, 0 mid สามัญ,
-            1 low เอก, 2 falling โท, 3 high ตรี, 4 rising จัตวา
+            result should be 'เขียน'
+
+            spell = Kham('สม', 'อุ', '', 'ท', 'ร', -1,
+                silent_after_style='plain')
+
+            result = spell.form
+
+            result should be 'สมุทร'
+
+        Args:
+            onset: Initial consonant(s), can be one or more.
+                (พยัญชนะต้น)
+            vowel: Vowel (สระ). Write the vowel with อ as
+                a placeholder. If vowel has ตัวสะกด ย, ว or j, w coda,
+                put them here together with vowel. Ex. อา, ไอ, อาว, อัย
+            silent_before: Silent consonant(s) before coda.
+                Defaults to ''.
+            coda: Final consonant, excluding j, w (ตัวสะกด
+                ไม่รวม ย, ว). Defaults to ''.
+            silent_after: Silent consonant(s) after coda.
+                Defaults to ''.
+            tone: Tone (เสียงวรรณยุกต์). -1 not specified,
+                0 mid สามัญ, 1 low เอก, 2 falling โท, 3 high ตรี,
+                4 rising จัตวา. Defaults to -1.
         """
         self.onset = {'used': onset, 'input': onset, 'used_index': -1}
         self.vowel = {'used': vowel}
