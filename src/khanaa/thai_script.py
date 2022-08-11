@@ -117,14 +117,14 @@ CONSONANTS = {
         'class': 'high',
         'pair': 'ช',
         'coda_class': '',
-        'sound_onset': 't͡ɕ',
+        'sound_onset': 't͡ɕʰ',
         'sound_coda': ''
     },
     'ช': {
         'class': 'low_pair',
         'pair': 'ฉ',
         'coda_class': 'dead',
-        'sound_onset': 't͡ɕ',
+        'sound_onset': 't͡ɕʰ',
         'sound_coda': 't̚'
     },
     'ซ': {
@@ -138,7 +138,7 @@ CONSONANTS = {
         'class': 'low_pair',
         'pair': 'ฉ',
         'coda_class': 'dead',
-        'sound_onset': 't͡ɕ',
+        'sound_onset': 't͡ɕʰ',
         'sound_coda': 't̚'
     },
     'ญ': {
@@ -384,11 +384,16 @@ CONSONANTS = {
 CLUSTERS = {
     'กร', 'กล', 'กว',
     'ขร', 'คร', 'ขล', 'คล', 'ขว', 'คว',
-    'บร',
+    'บร', 'บล',
     'ปร', 'ปล',
     'พร', 'ผล', 'พล',
-    'ฟร',
-    'ตร'
+    'ฟร', 'ฟล',
+    'ตร',
+    'ดร'
+}
+
+FALSE_CLUSTERS = {
+    'จร', 'ซร', 'ทร', 'ศร', 'สร'
 }
 
 VOWELS = {
@@ -1004,11 +1009,23 @@ TONES = {
     },
     4: {
         'mid alive': ['', 'mai_jattawaa'],
-        'mid dead': ['', ''], # cannot
+        'mid dead': ['', 'mai_jattawaa'], # can but no usage
         'high alive': ['', ''],
+        'high short dead': ['pair', 'mai_jattawaa'], # can but no usage
+        'high long dead': ['pair', 'mai_jattawaa'], # can but no usage
+        'low alive': ['pair', ''],
+        'low short dead': ['', 'mai_jattawaa'], # can but no usage
+        'low long dead': ['', 'mai_jattawaa'] # can but no usage
+    }
+}
+
+LOW_SINGLE_ALT = ['pair', 'mai_thoo'] # for falling tone เสียงโท
+
+TONE_NOT_AVAILABLE = {
+    0: {
+        'mid dead': ['', ''], # cannot
         'high short dead': ['', ''], # cannot
         'high long dead': ['', ''], # cannot
-        'low alive': ['pair', ''],
         'low short dead': ['', ''], # cannot
         'low long dead': ['', ''] # cannot
     }
@@ -1026,4 +1043,12 @@ DIACRITICS = {
     'kaaran': u'\u0e4c',
     'phinthu': u'\u0e3a',
     'yaamakkaan': u'\u0e4e'
+}
+
+TONE_IPA = {
+    0: '˧',
+    1: '˨˩',
+    2: '˥˩',
+    3: '˦˥',
+    4: '˩˩˦',
 }
