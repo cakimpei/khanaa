@@ -967,6 +967,8 @@ VOWELS = {
     }
 }
 
+VOWEL_CHAR = 'ะัาำิีึืุูเแโใไๅ็ั'
+
 TONES = {
     0: {
         'mid alive': ['', ''],
