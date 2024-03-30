@@ -65,7 +65,7 @@ class Combination(Word):
                 onset=possible[0],
                 vowel=possible[1],
                 coda=possible[2],
-                tone=self._tone
+                tone=self._tone_realized
             )
             result.append(kham.form)
         return list(dict.fromkeys(result))
