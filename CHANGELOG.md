@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Kham.rtgs(), returning basic latin transcription of the word using Royal Thai General System of Transcription.
+
 ## [0.1.1] - 2024-03-30
 
 ### Changed
