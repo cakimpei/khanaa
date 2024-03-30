@@ -1,13 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.1.0] - 2024-03-30
 
 ### Added
 
 - Kham, replacing SpellWord, with Kham.form replacing SpellWord.spell_out() and Kham.all_tone() replacing SpellWord.all_tone().
 - Kham.ipa(), returning basic IPA pronunction data of the input.
 - Kham.is_donee_end(), Kham.is_donor_end(), Kham.is_donor_start(), returning syllable boundary ambiguity data of the input.
+- Kham.homophone(), returning a list of homophone
+- Kham.data, returning all data
 - New pref kwargs: split_true_cluster, split_false_cluster, split_leading_con, low_single_h_thoo.
 - spelling_decompose(), returning spelling data of the input Thai syllable.
 
