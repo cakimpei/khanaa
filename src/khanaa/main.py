@@ -32,6 +32,8 @@ class Kham:
     
     Methods:
         ipa (str): Return basic IPA pronunciation of the word.
+        rtgs (str): Return basic latin transcription of the word using
+            Royal Thai General System of Transcription.
         is_donee_end (bool): Check if onset of the following word
             can be interpreted as this word's coda.
         is_donor_end (bool): Check if coda of this word can be
@@ -244,6 +246,15 @@ class Kham:
             split_leading_con so that สล+โอ+ว์+-1=สโลว์=saʔ˨˩.loː˧.
         """
         return self._spell.reading
+    
+    def rtgs(self) -> str:
+        """Return basic latin transcription using RTGS system.
+
+        This function will return a latin transcription of the word using
+        Royal Thai General System of Transcription (RTGS). For example,
+        'หวน' will return 'huan'.
+        """
+        return self._spell.rtgs
 
     def is_donee_end(self) -> bool:
         """Return True if onset after this word can be seen as its coda.
@@ -309,6 +320,7 @@ class Kham:
         result.pop("_spell")
         result.update({
             'ipa': self.ipa(),
+            'rtgs': self.rtgs(),
             'is_donee_end': self.is_donee_end(),
             'is_donor_end': self.is_donor_end(),
             'is_donor_start': self.is_donor_start(),

@@ -97,3 +97,25 @@ def find_tone(onset: str, vowel: str, coda: str = '',
             break
 
     return tone_num
+
+def parse_ipa_string(ipa: str) -> List[Dict[str, str]]:
+    """Turn IPA string to a list containing dicts representing each syllable.
+
+    Args:
+        ipa: IPA string with a space between values such as 'k l ɛː ŋ ˥˩'
+    
+    Return:
+        A list of dictionaries whiich have following keys: initial, glide,
+            vowel, final, tone
+    """
+    result = []
+    syllables = ipa.split(" . ")
+    for syllable in syllables:
+        ipa_list = syllable.split()
+        initial = ipa_list[0]
+        glide = None if ipa_list[1] not in ['w', 'r', 'l'] else ipa_list[1]
+        vowel = ipa_list[1] if not glide else ipa_list[2]
+        final = None if ipa_list[-2] not in ['w', 'j', 'm', 'n', 'ŋ', 'p̚', 't̚', 'k̚'] else ipa_list[-2]
+        tone = ipa_list[-1]
+        result.append({'initial': initial, 'glide': glide, 'vowel': vowel, 'final': final, 'tone': tone})
+    return result

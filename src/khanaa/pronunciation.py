@@ -1,6 +1,6 @@
 """This module contains class used to derive word pronunciation."""
 
-from typing import Any
+from typing import Any, Dict, List
 
 from khanaa.thai_script import (CLUSTERS, CONSONANTS, FALSE_CLUSTERS, VOWELS,
     TONE_IPA)
@@ -53,23 +53,60 @@ class ThaiToIPA:
                 and self.onset[-2:] in FALSE_CLUSTERS):
             false_cluster = True
         return false_cluster
-
+    
     @property
-    def onset_ipa(self) -> str:
-        onset_ipa_chars = []
+    def onset_ipa_list(self) -> List[Dict[str, str]]:
+        onset_ipa_chars: List[Dict[str, str]] = []
         convert_onset = self.onset
         if self.is_false_cluster:
             # because false clusters have ซ sound
             convert_onset = convert_onset[:-2] + 'ซ'
-        reversed_onset = convert_onset[::-1]
-        for index, char in enumerate(reversed_onset):
-            if not (index == 0
-                    or (index == 1 and self.is_true_cluster)):
-                # insert them backward because we're in reverse mode
-                onset_ipa_chars.extend(['.',
-                    self.find_tone_onset(char), 'aʔ'])
-            onset_ipa_chars.append(CONSONANTS[char]['sound_onset'])
-        return ' '.join(reversed(onset_ipa_chars))
+        for index, char in enumerate(convert_onset):
+
+            # if it is a glide, put it with the preceding group
+            if index == len(convert_onset) - 1 and self.is_true_cluster:
+                onset_ipa_chars[-1].update({
+                    'glide': CONSONANTS[char]['sound_onset'],
+                    'cat': 'cluster'
+                })
+                continue
+
+            inner_cat: str = "consonant"
+            inner_vowel: str = ""
+            inner_tone: str = ""
+
+            # if the onset should be separately pronounced
+            if not (index == len(convert_onset) - 1
+                    or (index == len(convert_onset) - 2 and self.is_true_cluster)):
+                inner_cat = "sub"
+                inner_vowel = 'a'
+                inner_tone = self.find_tone_onset(char)
+            inner_onset: str = CONSONANTS[char]['sound_onset']
+            onset_ipa_chars.append({
+                'cat': inner_cat,
+                'onset': inner_onset,
+                'glide': "",
+                'vowel': inner_vowel,
+                'tone': inner_tone
+            })
+        return onset_ipa_chars
+
+    @property
+    def onset_ipa(self) -> str:
+        result_list: List[str] = []
+        onset_list = self.onset_ipa_list
+        for part in onset_list:
+            if part['cat'] == 'consonant':
+                result_list.append(part['onset'])
+            else:
+                subtext: str = " ".join(filter(None, [
+                    part['onset'],
+                    part['glide'],
+                    part['vowel'],
+                    part['tone']
+                ]))
+                result_list.append(subtext)
+        return ' . '.join(result_list)
     
     @staticmethod
     def find_tone_onset(onset_char) -> str:

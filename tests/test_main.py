@@ -196,10 +196,13 @@ TO_IPA = (
     't a ŋ ˥˩'),
     ({'split_leading_con': False},
     {'onset': 'สล', 'vowel': 'โอ', 'silent_before': 'ว', 'tone': 4},
-    's aʔ ˨˩ . l oː ˩˩˦'),
+    's a ˨˩ . l oː ˩˩˦'),
     ({'split_leading_con': True},
     {'onset': 'สล', 'vowel': 'โอ', 'silent_before': 'ว', 'tone': 0},
-    's aʔ ˨˩ . l oː ˧')
+    's a ˨˩ . l oː ˧'),
+    ({},
+    {'onset': 'ป', 'vowel': 'อะ', 'tone': -1},
+    'p aʔ ˨˩'),
 )
 
 DONEE_END = [

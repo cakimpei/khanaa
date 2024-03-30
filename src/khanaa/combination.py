@@ -5,6 +5,7 @@ from typing import List
 from khanaa.ambiguity import find_donee_end, find_donor_end, find_donor_start
 from khanaa.homophone import find_homophone_product
 from khanaa.pronunciation import ThaiToIPA
+from khanaa.romanization import ipa_to_rtgs
 from khanaa.speller import combine
 from khanaa.word import Word
 
@@ -13,6 +14,7 @@ class Combination(Word):
     
     For information for each methods, see Kham.
     """
+    _ipa_data: ThaiToIPA = None
     
     @property
     def form(self) -> str:
@@ -30,14 +32,23 @@ class Combination(Word):
                 continue
             all_tone.append(spell.form)
         return all_tone
+    
+    @property
+    def ipa_data(self) -> ThaiToIPA:
+        if not self._ipa_data:
+            # it's _tone_realized not _tone
+            # because we want spelled word sound, not the input one.
+            self._ipa_data = ThaiToIPA(self._onset, self._vowel, self._silent_before,
+                self._coda, self._silent_after, self._tone_realized, **self.pref)
+        return self._ipa_data
 
     @property
     def reading(self) -> str:
-        # it's _tone_realized not _tone
-        # because we want spelled word sound, not the input one.
-        thai_to_ipa = ThaiToIPA(self._onset, self._vowel, self._silent_before,
-            self._coda, self._silent_after, self._tone_realized, **self.pref)
-        return thai_to_ipa.convert()
+        return self.ipa_data.convert()
+    
+    @property
+    def rtgs(self) -> str:
+        return ipa_to_rtgs(self.ipa_data)
     
     @property
     def is_donee_end(self) -> bool:
