@@ -205,6 +205,24 @@ TO_IPA = (
     'p aʔ ˨˩'),
 )
 
+TO_RTGS = (
+    ({},
+    {'onset': 'น', 'vowel': 'โอะ', 'coda': 'ก', 'tone': -1},
+    'nok'),
+    ({},
+    {'onset': 'ส', 'vowel': 'อุ', 'coda': 'ข', 'tone': 1},
+    'suk'),
+    ({},
+    {'onset': 'ล', 'vowel': 'อะ', 'coda': 'พ', 'silent_after': 'ธ'},
+    'lap'),
+    ({},
+    {'onset': 'สล', 'vowel': 'โอ', 'silent_before': 'ว', 'tone': 0},
+    'salo'),
+    ({},
+    {'onset': 'ปร', 'vowel': 'อา', 'tone': 0},
+    'pra'),
+)
+
 DONEE_END = [
     ({},
     {'onset': 'ต', 'vowel': 'อา'},
@@ -300,6 +318,11 @@ class TestSpellWord(unittest.TestCase):
         for case in TO_IPA:
             spell = Kham(**case[0], **case[1])
             self.assertEqual(spell.ipa(), case[2])
+
+    def test_to_rtgs(self):
+        for case in TO_RTGS:
+            spell = Kham(**case[0], **case[1])
+            self.assertEqual(spell.rtgs(), case[2])
 
     def test_donee_end(self):
         for case in DONEE_END:
