@@ -8,6 +8,7 @@ class Kham:
     
     Attributes:
         form (str): Spelled form of the word.
+        data (dict[str, Any]): All information about this word.
         onset (str): พยัญชนะต้น
         onset_index (int): Index of onset used when calculating tone.
         onset_main (str): Main onset used when calculating tone.
@@ -38,6 +39,7 @@ class Kham:
         is_donor_start (bool): Check if onset of this word can be
             interpreted as coda of the preceding word.
         all_tone (list[str]): Return 0-4 tone version of the word.
+        homophone (list[str]): Return a list of homophone
     """
 
     def __init__(
@@ -288,5 +290,29 @@ class Kham:
         Notes:
             - Now empty string will be the result if the word is not
             possible with that tone.
-            Ex. ['', 'กะ', 'ก้ะ', 'ก๊ะ', 'ก๋ะ']"""
+            Ex. ['', 'กะ', 'ก้ะ', 'ก๊ะ', 'ก๋ะ']
+        """
         return self._spell.all_tone
+    
+    def homophone(self) -> List[str]:
+        """Return a list of the word's homophone
+        
+        Notes:
+            - The list also includes the original word
+            - Silent characters are not included
+        """
+        return self._spell.homophone
+    
+    @property
+    def data(self) -> dict[str, Any]:
+        result = {attr: self.__dict__[attr] for attr in self.__dict__}
+        result.pop("_spell")
+        result.update({
+            'ipa': self.ipa(),
+            'is_donee_end': self.is_donee_end(),
+            'is_donor_end': self.is_donor_end(),
+            'is_donor_start': self.is_donor_start(),
+            'all_tone': self.all_tone(),
+            'homophone': self.homophone(),
+        })
+        return result

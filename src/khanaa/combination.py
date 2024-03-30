@@ -3,6 +3,7 @@
 from typing import List
 
 from khanaa.ambiguity import find_donee_end, find_donor_end, find_donor_start
+from khanaa.homophone import find_homophone_product
 from khanaa.pronunciation import ThaiToIPA
 from khanaa.speller import combine
 from khanaa.word import Word
@@ -54,3 +55,17 @@ class Combination(Word):
     @property
     def is_donor_start(self) -> bool:
         return find_donor_start(self._onset, self.form)
+    
+    @property
+    def homophone(self) -> list:
+        product = find_homophone_product(self._onset, self._vowel, self._coda)
+        result = []
+        for possible in product:
+            kham = Combination(
+                onset=possible[0],
+                vowel=possible[1],
+                coda=possible[2],
+                tone=self._tone
+            )
+            result.append(kham.form)
+        return list(dict.fromkeys(result))
